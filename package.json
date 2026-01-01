@@ -1,0 +1,142 @@
+{
+  "name": "Dromo GC",
+  "author": "elucis",
+  "version": "0.1.0",
+  "keywords": [
+    "autodromo",
+    "digital"
+  ],
+  "private": true,
+  "dependencies": {
+    "pebble-clay": "^1.0.4"
+  },
+  "pebble": {
+    "displayName": "Dromo GC",
+    "uuid": "57a32d42-c1e8-4efb-a7b1-a77f3edbe92e",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "diorite",
+      "chalk",
+      "emery"
+    ],
+    "capabilities": [
+      "health",
+      "location",
+      "configurable"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [
+      "SUBSCRIBE_TO_DATA",
+      "TICK_UNITS",
+      "TAP_WAKEUP_DURATION",
+      "ACCENT_COLOR",
+      "WRIST_FLICK",
+      "INVERTED_TIMEBOX",
+      "BATTERY_PERCENTAGE",
+      "HOUR_MODE",
+      "HEALTH_MODE",
+      "WEATHER_MODE",
+      "BAT_MODE[3]",
+      "BAT_MODE_LB",
+      "BAT_MODE_ST_START",
+      "BAT_MODE_ST_END",
+      "WEATHER_REFRESH_RATE",
+      "WAKEUP_TICK_UNITS",
+      "WAKEUP_LIGHT",
+      "QTM_TICK_UNITS",
+      "WEATHER_FORECAST_RANGE",
+      "WEATHER_TEMP_UNIT",
+      "WEATHER_WIND_UNIT",
+      "WEATHER_PRECIP_UNIT",
+      "REQ_WEATHER",
+      "CURRENT_TEMP",
+      "CURRENT_COND",
+      "CURRENT_PRECIP",
+      "CURRENT_WIND",
+      "FUTURE_COND",
+      "FUTURE_MIN",
+      "FUTURE_MAX",
+      "FUTURE_PRECIP",
+      "FUTURE_WIND"
+    ],
+    "resources": {
+      "media": [
+        {
+          "characterRegex": "[:0-9\\- ]",
+          "type": "font",
+          "name": "DROMO_HHMM_32",
+          "file": "fonts/dromo_hhmm.ttf"
+        },
+        {
+          "characterRegex": "[0-9\\-]",
+          "type": "font",
+          "name": "DROMO_SS_24",
+          "file": "fonts/dromo_ss.ttf"
+        },
+        {
+          "characterRegex": "[A-Za-z0-9\\-\\_ ]",
+          "type": "font",
+          "name": "DROMO_DAYDATE_19",
+          "file": "fonts/dromo_daydate.ttf"
+        },
+        {
+          "characterRegex": "[APM]",
+          "type": "font",
+          "name": "DROMO_AMPM_8",
+          "file": "fonts/dromo_ampm.ttf"
+        },
+        {
+          "characterRegex": "[A-Z0-9\\- ]",
+          "type": "font",
+          "name": "DROMO_DAYDATE_9",
+          "file": "fonts/dromo_daydate.ttf"
+        },
+        {
+          "characterRegex": "[!%&(-?A-_a-}° ]",
+          "type": "font",
+          "name": "DROMO_BAT_5",
+          "file": "fonts/dromo_bat.ttf"
+        },
+        {
+          "characterRegex": "[!%&(-?A-_a-}° ]",
+          "type": "font",
+          "name": "DROMO_BAT_10",
+          "file": "fonts/dromo_bat.ttf"
+        },
+        {
+          "characterRegex": "[A-Z ]",
+          "type": "font",
+          "name": "DROMO_BRANDING_10",
+          "file": "fonts/dromo_branding.ttf"
+        },
+        {
+          "type": "bitmap",
+          "name": "DROMO_LOGO",
+          "file": "images/Ad.png",
+          "memoryFormat": "1Bit",
+          "spaceOptimization": "memory",
+          "menuIcon": true
+        },
+        {
+          "type": "bitmap",
+          "name": "MUTED",
+          "file": "images/muted.png",
+          "memoryFormat": "1Bit",
+          "spaceOptimization": "memory"
+        },
+        {
+          "type": "bitmap",
+          "name": "DISCONNECTED",
+          "file": "images/disconnected.png",
+          "memoryFormat": "1Bit",
+          "spaceOptimization": "memory"
+        }
+      ]
+    }
+  }
+}

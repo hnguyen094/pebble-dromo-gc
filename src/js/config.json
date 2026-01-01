@@ -1,0 +1,400 @@
+[
+    {
+        "type": "heading",
+        "defaultValue": "Dromo GC Configuration"
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "id": "VISUAL_HEADER",
+                "defaultValue": "Visual Options"
+            },
+            {
+                "type": "toggle",
+                "messageKey": "INVERTED_TIMEBOX",
+                "defaultValue": false,
+                "label": "Negative Display",
+                "description": "When ON, text will be white appearing on a black background instead."
+            },
+            {
+                "type": "color",
+                "messageKey": "ACCENT_COLOR",
+                "defaultValue": "ffde21",
+                "label": "Accent Color",
+                "description": "The accent color of some minor elements."
+            },
+            {
+                "type": "toggle",
+                "messageKey": "BATTERY_PERCENTAGE",
+                "defaultValue": false,
+                "label": "Battery Percentage",
+                "description": "When ON, the battery percentage will be shown in addition to the battery icon."
+            },
+            {
+                "type": "select",
+                "messageKey": "HOUR_MODE",
+                "defaultValue": 2,
+                "label": "Hour Display",
+                "options": [
+                    {
+                        "label": "System",
+                        "value": 0
+                    },
+                    {
+                        "label": "24H",
+                        "value": 1
+                    },
+                    {
+                        "label": "12H (PM Only)",
+                        "value": 2
+                    },
+                    {
+                        "label": "12H (AM/PM)",
+                        "value": 3
+                    }
+                ]
+            }
+        ]
+    },
+
+    { 
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "defaultValue": "Basic Configuration",
+                "id": "BASIC_HEADER"
+            },
+            {
+                "type": "select",
+                "messageKey": "TICK_UNITS",
+                "defaultValue": 1, 
+                "label": "Time Refresh Interval",
+                "description": "The interval in which the time will update.",
+                "options": [
+                    {
+                        "label": "Second",
+                        "value": 0
+                    },
+                    {
+                        "label": "Minute",
+                        "value": 1
+                    },
+                    {
+                        "label": "Hour",
+                        "value": 2
+                    },
+                    {
+                        "label": "Day",
+                        "value": 3
+                    },
+                    {
+                        "label": "Month",
+                        "value": 4
+                    },
+                    {
+                        "label": "Year",
+                        "value": 5
+                    }
+                ]
+            },
+            {
+                "type": "toggle",
+                "messageKey": "SUBSCRIBE_TO_DATA",
+                "defaultValue": true,
+                "label": "Subscribe To Data",
+                "description": "When OFF, data displayed on screen are not updated until the next time update."
+            },
+            {
+                "type": "slider",
+                "messageKey": "WRIST_FLICK",
+                "defaultValue": 1,
+                "label": "Wake-Up On X Wrist-Flicks",
+                "description": "The number of wrist-flicks before your Pebble wakes.<br>0: flicking your wrist won't wake your Pebble at all.",
+                "min": 0,
+                "max": 3,
+                "step": 1
+            },
+            {
+                "type": "select",
+                "messageKey": "HEALTH_MODE",
+                "label": "Show Health",
+                "description": "Displays steps, maybe heart rate, and current predicted physical activity.",
+                "defaultValue": 2,
+                "options": [
+                    {
+                        "label": "Always",
+                        "value": 2
+                    },
+                    {
+                        "label": "On Wake-Up",
+                        "value": 1
+                    },
+                    {
+                        "label": "Never",
+                        "value": 0
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "messageKey": "WEATHER_MODE",
+                "label": "Show Weather",
+                "description": "Displays current/future temperature, current condition, hourly chance of rain, and current/future wind speeds.",
+                "defaultValue": 0,
+                "options": [
+                    {
+                        "label": "Always",
+                        "value": 2
+                    },
+                    {
+                        "label": "On Wake-Up",
+                        "value": 1
+                    },
+                    {
+                        "label": "Never",
+                        "value": 0
+                    }
+                ]
+            }
+        ]
+    },
+
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "defaultValue": "Weather",
+                "id": "WEATHER_HEADER"
+            },
+            {
+                "type": "text",
+                "defaultValue": "Supported by <a href=\"https://open-meteo.com\">open-meteo.com</a>, under <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>.",
+                "id": "WEATHER_DESC"
+            },
+            {
+                "type": "slider",
+                "messageKey": "WEATHER_REFRESH_RATE",
+                "defaultValue": 1,
+                "label": "Polling Rate",
+                "description": "How often (in hours) the watch requests new weather data.",
+                "min": 0.1,
+                "max": 6,
+                "step": 0.1
+            },
+            {
+                "type": "slider",
+                "messageKey": "WEATHER_FORECAST_RANGE",
+                "defaultValue": 24,
+                "label": "Forecast Range",
+                "description": "How many hours into the future are aggregated. Values are:<br>temperature range (min/max)<br>weather condition (highest severity, based on WMO codes)<br>chance of precipication (max)<br>wind speed (fastest)",
+                "min": 1,
+                "max": 24,
+                "step": 1
+            },
+            {
+                "type": "select",
+                "messageKey": "WEATHER_TEMP_UNIT",
+                "label": "Temperature Unit",
+                "defaultValue": 1,
+                "options": [
+                    {
+                        "label": "Fahrenheit",
+                        "value": 1
+                    },
+                    {
+                        "label": "Celsius",
+                        "value": 0 
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "messageKey": "WEATHER_WIND_UNIT",
+                "label": "Wind Speed Unit",
+                "defaultValue": 2,
+                "options": [
+                    {
+                        "label": "km/h",
+                        "value": 0 
+                    },
+                    {
+                        "label": "m/s",
+                        "value": 1
+                    },
+                    {
+                        "label": "mph",
+                        "value": 2
+                    },
+                    {
+                        "label": "knots",
+                        "value": 3
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "messageKey": "WEATHER_PRECIP_UNIT",
+                "label": "Precipitation Unit",
+                "defaultValue": 1,
+                "options": [
+                    {
+                        "label": "inch",
+                        "value": 1
+                    },
+                    {
+                        "label": "millimeter",
+                        "value": 0
+                    }
+                ]
+            }
+        ]
+    },
+
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "defaultValue": "Wake-Up Options",
+                "id": "WAKEUP_HEADER"
+            },
+            {
+                "type": "slider",
+                "messageKey": "TAP_WAKEUP_DURATION",
+                "defaultValue": 5,
+                "label": "Duration",
+                "description": "How long (in seconds) you want the wake-up to last.",
+                "min": 1,
+                "max": 60,
+                "step": 1
+            },
+            {
+                "type": "toggle",
+                "messageKey": "WAKEUP_LIGHT",
+                "defaultValue": true,
+                "label": "Force Light",
+                "description": "When ON, the watchface will ignore Backlight settings and turn on the backlight during the wake-up."
+            },
+            {
+                "type": "select",
+                "messageKey": "WAKEUP_TICK_UNITS",
+                "defaultValue": 0, 
+                "label": "Time Refresh Interval",
+                "description": "The interval in which the time will update during a wakeup.",
+                "options": [
+                    {
+                        "label": "Second",
+                        "value": 0
+                    },
+                    {
+                        "label": "Minute",
+                        "value": 1
+                    },
+                    {
+                        "label": "Hour",
+                        "value": 2
+                    },
+                    {
+                        "label": "Day",
+                        "value": 3
+                    },
+                    {
+                        "label": "Month",
+                        "value": 4
+                    },
+                    {
+                        "label": "Year",
+                        "value": 5
+                    }
+                ]
+            }
+        ]
+    },
+
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "id": "BATTERY_HEADER",
+                "defaultValue": "Battery Saver"
+            },
+            {
+                "type": "checkboxgroup",
+                "messageKey": "BAT_MODE",
+                "label": "Battery Saver Conditions",
+                "defaultValue": [true, false, false],
+                "description": "Conditions that will enable battery saver mode.",
+                "options": ["Low Battery", "Sleep Time", "Quiet Time"]
+            },
+            {
+                "type": "slider",
+                "messageKey": "BAT_MODE_LB",
+                "label": "Low Battery Threshold",
+                "description": "The battery percentage threshold when battery saver mode activates.",
+                "defaultValue": 10,
+                "min": 1,
+                "max": 99
+            },
+            {
+                "type": "slider",
+                "messageKey": "BAT_MODE_ST_START",
+                "label": "Sleep Time: Start",
+                "description": "The hour when battery saver mode begins.",
+                "defaultValue": 23,
+                "min": 0,
+                "max": 23
+            },
+            {
+                "type": "slider",
+                "messageKey": "BAT_MODE_ST_END",
+                "label": "Sleep Time: End",
+                "description": "The hour when battery saver mode ends.",
+                "defaultValue": 7,
+                "min": 0,
+                "max": 23
+            },
+            {
+                "type": "select",
+                "messageKey": "QTM_TICK_UNITS",
+                "defaultValue": 1, 
+                "label": "Time Refresh Interval",
+                "description": "The interval in which the time will update during battery saver mode.",
+                "options": [
+                    {
+                        "label": "Second",
+                        "value": 0
+                    },
+                    {
+                        "label": "Minute",
+                        "value": 1
+                    },
+                    {
+                        "label": "Hour",
+                        "value": 2
+                    },
+                    {
+                        "label": "Day",
+                        "value": 3
+                    },
+                    {
+                        "label": "Month",
+                        "value": 4
+                    },
+                    {
+                        "label": "Year",
+                        "value": 5
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "submit",
+        "defaultValue": "Save & Close"
+    }
+]

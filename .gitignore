@@ -1,0 +1,8 @@
+._*
+*.DS_Store
+build/
+node_modules/
+.lock-waf_darwin_build
+TODO.txt
+/*.png
+
