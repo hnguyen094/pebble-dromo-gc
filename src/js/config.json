@@ -55,6 +55,26 @@
                         "value": 3
                     }
                 ]
+            },
+            {
+                "type": "select",
+                "messageKey": "TZ_MODE",
+                "defaultValue": 1,
+                "label": "Show Abbreviated Timezone",
+                "options": [
+                    {
+                        "label": "Always",
+                        "value": 2
+                    },
+                    {
+                        "label": "On Wake-Up",
+                        "value": 1
+                    },
+                    {
+                        "label": "Never",
+                        "value": 0
+                    }
+                ]
             }
         ]
     },
@@ -311,6 +331,26 @@
                         "value": 5
                     }
                 ]
+            },
+            {
+                "type": "select",
+                "messageKey": "TZ_ID",
+                "label": "2nd Timezone",
+                "options": [
+                    {
+                        "label": "Disabled",
+                        "value": ""
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "messageKey": "TZ_ID_STATE"
+            },
+            {
+                "type": "text",
+                "id": "TZ_DEBUG",
+                "defaultValue": ""
             }
         ]
     },

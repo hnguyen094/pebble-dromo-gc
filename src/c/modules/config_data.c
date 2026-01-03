@@ -19,6 +19,9 @@ static struct AppConfig s_app_config = {
     .battery_percentage = false,
     .wakeup_light = true,
     .hour_mode = 2,
+    .tz_mode = 1,
+    .tz_id = 0,
+    .tz_offset = 0,
     .weather_refresh_rate = 3600,
     .weather_forecast_range = 24,
     .weather_temp_unit = 1,
@@ -87,6 +90,14 @@ static bool config_received(DictionaryIterator *iter) {
             s_app_config.wakeup_light = (bool)kvp->value->int16;
         else if (kvp->key == MESSAGE_KEY_HOUR_MODE) 
             s_app_config.hour_mode = (int)kvp->value->int32;
+        else if (kvp->key == MESSAGE_KEY_TZ_MODE) 
+            s_app_config.tz_mode = (int)kvp->value->int32;
+        else if (kvp->key == MESSAGE_KEY_TZ_ID) 
+            s_app_config.tz_id = (int)kvp->value->int32;
+        else if (kvp->key == MESSAGE_KEY_TZ_OFFSET) 
+            s_app_config.tz_offset = (int)kvp->value->int32;
+        else if (kvp->key == MESSAGE_KEY_TZ_CODE) 
+            strcpy(s_app_config.tz_code, kvp->value->cstring);
         if (kvp->key == MESSAGE_KEY_WEATHER_FORECAST_RANGE)
             s_app_config.weather_forecast_range = (int)kvp->value->int32;
         if (kvp->key == MESSAGE_KEY_WEATHER_TEMP_UNIT)

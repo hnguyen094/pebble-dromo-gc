@@ -1,16 +1,13 @@
 const Clay = require('pebble-clay');
 const clayConfig = require('./config.json');
 const weather = require('./weather');
+const tz = require('./timezones');
 const modifications = require('./modifications');
+
 var clay = new Clay(clayConfig, modifications, { autoHandleEvents: false });
 
 const messageKeys = require('message_keys');
 const messageKeysLookup = Object.fromEntries(Object.entries(messageKeys).map(([k, v]) => [v, k]));
-
-const dbmsg = obj =>
-
-clay.registerComponent(require('./drawing'));
-clay.registerComponent(require('./test'));
 
 Pebble.addEventListener('showConfiguration', function(e) {
     Pebble.openURL(clay.generateUrl());
@@ -54,6 +51,11 @@ Pebble.addEventListener('webviewclosed', function(e) {
     const weathermodekey = messageKeys.WEATHER_MODE;
     const healthmodekey = messageKeys.HEALTH_MODE;
     const hourmodekey = messageKeys.HOUR_MODE;
+    const tzmodekey = messageKeys.TZ_MODE;
+    const tzidkey = messageKeys.TZ_ID;
+    const tzidstatekey = messageKeys.TZ_ID_STATE;
+    const tzoffsetkey = messageKeys.TZ_OFFSET;
+    const tzcodekey = messageKeys.TZ_CODE;
 
     settings[tempunitkey] = parseInt(settings[tempunitkey]);
     settings[windunitkey] = parseInt(settings[windunitkey]);
@@ -61,6 +63,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
     settings[weathermodekey] = parseInt(settings[weathermodekey]);
     settings[healthmodekey] = parseInt(settings[healthmodekey]);
     settings[hourmodekey] = parseInt(settings[hourmodekey]);
+    settings[tzmodekey] = parseInt(settings[tzmodekey]);
 
     const batmodekey = messageKeys.BAT_MODE;
     var batmode = 0;
@@ -72,11 +75,36 @@ Pebble.addEventListener('webviewclosed', function(e) {
     }
     settings[batmodekey] = batmode;
 
-    sendAppMessage(settings);
+    delete settings[tzidstatekey];
+
+    const sendAnyway = function(error, msg) {
+        sendAppMessage(msg);
+        console.error(error);
+    }
+    if (settings[tzidkey]) {
+        tz.get(settings[tzidkey]).then(function(partial) {
+            settings[tzoffsetkey] = partial[tzoffsetkey];
+            settings[tzcodekey] = partial[tzcodekey];
+            sendAppMessage(settings);
+        }).catch(e => sendAnyway(e, settings));
+    } else {
+        settings[tzcodekey] = "";
+        sendAppMessage(settings);
+    }
 });
 
 Pebble.addEventListener('ready', function(e) {
-    weather.subscribe(sendAppMessage, console.error);
+    const settings = JSON.parse(localStorage.getItem('clay-settings'));
+    const weatherSubscribe = () => weather.subscribe(sendAppMessage, console.error);
+    if ("TZ_ID" in settings) {
+        tz.get(settings.TZ_ID).then(function(msg) {
+            sendAppMessage(msg);
+            weatherSubscribe();
+        }).catch(function(e) {
+            console.error(e);
+            weatherSubscribe();
+        });
+    } else weatherSubscribe();
 });
 
 Pebble.addEventListener('appmessage', function(e) {

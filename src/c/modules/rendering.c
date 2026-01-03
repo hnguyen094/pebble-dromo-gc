@@ -74,6 +74,7 @@ static char s_steps_buffer[14];     // STEPS: XXXXXX\0
 static char s_hr_buffer[8];     // XXX BPM\0
 static char s_precip_buffer[12];     // XXkm/h 100%\0
 static char s_condition_buffer[30]; // light thunderstorm with hail\0
+static char s_tz_buffer[7];         // GMT+07\0
 
 const char *s_branding_buffer = "GROUP C SPORT CHRONO";
 
@@ -83,6 +84,7 @@ static TextLayer *s_ampm_layer;
 static TextLayer *s_day_layer;
 static TextLayer *s_date_layer;
 static TextLayer *s_branding_layer;
+static TextLayer *s_tz_layer;
 
 static GFont s_hhmm_font;
 static GFont s_ss_font;
@@ -96,6 +98,7 @@ static GColor s_accent_color;
 static int s_weather_mode;
 static int s_health_mode;
 static int s_hour_mode;
+static int s_tz_mode;
 static bool s_awake;
 static bool s_inverted_timebox;
 static bool s_battery_percentage;
@@ -103,6 +106,15 @@ static bool s_battery_percentage;
 static void render_time(struct tm *tick_time, TimeUnits units_changed, TimeUnits current_units) {
     time_t current = mktime(tick_time);
     struct tm *local_time = localtime(&current);
+    
+    if (s_awake && strlen(app_config()->tz_code) != 0) {
+        current = current + app_config()->tz_offset;
+        local_time = gmtime(&current);
+        snprintf(s_tz_buffer, sizeof(s_tz_buffer), "%s", app_config()->tz_code);
+    } else {
+        strftime(s_tz_buffer, sizeof(s_tz_buffer), "%Z", local_time);
+    }
+
     static char fmt[6];
     // Note: no year display
     if (units_changed & (MONTH_UNIT | DAY_UNIT)) { 
@@ -151,6 +163,7 @@ static void timebox_set_text_color() {
     text_layer_set_text_color(s_day_layer, color);
     text_layer_set_text_color(s_date_layer, color);
     text_layer_set_text_color(s_ampm_layer, color);
+    text_layer_set_text_color(s_tz_layer, color);
 
     color = s_inverted_timebox ? GColorBlack : GColorWhite;
     text_layer_set_background_color(s_hhmm_layer, color);
@@ -158,6 +171,7 @@ static void timebox_set_text_color() {
     text_layer_set_background_color(s_date_layer, color);
     text_layer_set_background_color(s_day_layer, color);
     text_layer_set_background_color(s_ampm_layer, color);
+    text_layer_set_background_color(s_tz_layer, color);
 }
 
 void rendering_handle_device_data_update() {
@@ -236,6 +250,8 @@ void rendering_handle_wakeup(bool awake) {
         s_awake = awake;
         layer_mark_dirty(s_aux_data_layer); 
         layer_mark_dirty(s_opt_aux_layer);
+        
+        layer_set_hidden((Layer *)s_tz_layer, !(s_tz_mode == 2 || (s_tz_mode == 1 && s_awake)));
     }
 }
 
@@ -272,6 +288,10 @@ void rendering_handle_config_update() {
     if (s_hour_mode != data->hour_mode) { // TODO: we need to trigger rendering_tick_handler with all correct args.
         s_hour_mode = data->hour_mode;
         force_tick_now(HOUR_UNIT);
+    }
+    if (s_tz_mode != data->tz_mode) {
+        s_tz_mode = data->tz_mode;
+        layer_set_hidden((Layer *)s_tz_layer, !(s_tz_mode == 2 || (s_tz_mode == 1 && s_awake)));
     }
 }
 
@@ -459,13 +479,15 @@ static void layers_load(Layer *window_layer) {
     s_ampm_layer = text_layer_create(GRect(TIMEBOX_PAD, TIMEBOX_PAD + DAYDATE_FONT_SZ + AMPM_PAD, bounds.size.w - 2*TIMEBOX_PAD, AMPM_FONT_SZ));
     s_hhmm_layer = text_layer_create(GRect(TIMEBOX_PAD, bounds.size.h - TIMEBOX_PAD - HHMM_FONT_SZ, HHMM_WIDTH, HHMM_FONT_SZ));
     s_ss_layer = text_layer_create(GRect(bounds.size.w - SS_WIDTH - TIMEBOX_PAD + SS_PAD_HOFFSET, bounds.size.h - TIMEBOX_PAD - SS_FONT_SZ + SS_PAD_VOFFSET, SS_WIDTH, SS_FONT_SZ));
+    s_tz_layer = text_layer_create(GRect(bounds.size.w - SS_WIDTH - TIMEBOX_PAD + SS_PAD_HOFFSET, bounds.size.h - TIMEBOX_PAD - HHMM_FONT_SZ + SS_PAD_VOFFSET, SS_WIDTH, BAT_H));
 
     text_layer_set_text(s_hhmm_layer, s_hhmm_buffer);
     text_layer_set_text(s_ss_layer, s_ss_buffer);
     text_layer_set_text(s_ampm_layer, s_ampm_buffer);
-    text_layer_set_text(s_date_layer, s_date_buffer);
+    text_layer_set_text(s_tz_layer, s_tz_buffer);
     text_layer_set_text(s_day_layer, s_day_buffer);
     text_layer_set_text(s_branding_layer, s_branding_buffer);
+    text_layer_set_text(s_date_layer, s_date_buffer);
 
     s_logo_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DROMO_LOGO);
     s_mute_bitmap = gbitmap_create_with_resource(RESOURCE_ID_MUTED);
@@ -486,9 +508,11 @@ static void layers_load(Layer *window_layer) {
     text_layer_set_font(s_date_layer, s_daydate_font);
     text_layer_set_font(s_day_layer, s_daydate_font);
     text_layer_set_font(s_branding_layer, s_branding_font);
+    text_layer_set_font(s_tz_layer, s_bat_font);
 
     layer_set_hidden(s_aux_data_layer, !s_weather_mode);
     layer_set_hidden(s_opt_aux_layer, !(s_weather_mode || s_health_mode));
+    layer_set_hidden((Layer *)s_tz_layer, !(s_tz_mode == 2 || (s_tz_mode == 1 && s_awake)));
     layer_set_update_proc(s_container_layer, container_layer_proc);
     layer_set_update_proc(s_timebox_layer, timebox_layer_proc);
     layer_set_update_proc(s_opt_aux_layer, opt_aux_layer_proc);
@@ -502,6 +526,7 @@ static void layers_load(Layer *window_layer) {
     text_layer_set_text_alignment(s_day_layer, GTextAlignmentRight);
     text_layer_set_text_alignment(s_hhmm_layer, GTextAlignmentRight);
     text_layer_set_text_alignment(s_branding_layer, GTextAlignmentCenter);
+    text_layer_set_text_alignment(s_tz_layer, GTextAlignmentCenter);
     text_layer_set_background_color(s_branding_layer, GColorBlack);
     text_layer_set_text_color(s_branding_layer, GColorWhite);
     timebox_set_text_color();
@@ -528,6 +553,7 @@ static void layers_unload() {
     text_layer_destroy(s_date_layer);
     text_layer_destroy(s_day_layer);
     text_layer_destroy(s_branding_layer);
+    text_layer_destroy(s_tz_layer);
 
     fonts_unload_custom_font(s_hhmm_font);
     fonts_unload_custom_font(s_ss_font);
@@ -545,6 +571,7 @@ static void main_window_load(Window *window) {
     s_battery_percentage = app_config()->battery_percentage;
     s_accent_color = app_config()->accent_color;
     s_hour_mode = app_config()->hour_mode;
+    s_tz_mode = app_config()->tz_mode;
 
     Layer *window_layer = window_get_root_layer(window);
     layers_load(window_layer);
@@ -559,6 +586,7 @@ static void main_window_load(Window *window) {
     layer_add_child(s_timebox_layer, (Layer *)s_ampm_layer); 
     layer_add_child(s_timebox_layer, (Layer *)s_date_layer); 
     layer_add_child(s_timebox_layer, (Layer *)s_day_layer); 
+    layer_add_child(s_timebox_layer, (Layer *)s_tz_layer); 
     layer_add_child(s_timebox_layer, s_mute_layer); 
     layer_add_child(s_timebox_layer, s_disconnect_layer); 
     layer_add_child(s_timebox_layer, s_bat_layer); 

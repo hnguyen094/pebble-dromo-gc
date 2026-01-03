@@ -50,6 +50,7 @@ static void tick_restore(void *data) {
     s_tick_restore_handle = NULL;
     if (app_config()->wakeup_light) light_enable(false);
     rendering_handle_wakeup(false);
+    // force_tick_now(-1); // uncomment this to have the time refresh immediately when wakeup ends.
 }
 
 // Overrides the previous change request.
@@ -60,11 +61,11 @@ void modify_tick(TimeUnits tick_units, int for_seconds) {
         if (app_config()->wakeup_light) light_enable(true);
     }
     TimeUnits new_units = default_tick() | tick_units;
+    rendering_handle_wakeup(true);
     if (s_current_tick_units != new_units) { 
         tick_timer_service_subscribe(s_current_tick_units = new_units, tick_handler); 
         force_tick_now(-1);
     }
-    rendering_handle_wakeup(true);
 }
 
 void tick_init(TickUpdateDeviceData update_device_data) {

@@ -1,5 +1,7 @@
 module.exports = function(minified) {
     const config = this;
+    const $ = minified.$;
+    const HTML = minified.HTML;
 
     const toggle = function(condition, keys, ids = []) {
         for(let i = 0; i < keys.length; i++) {
@@ -26,10 +28,10 @@ module.exports = function(minified) {
         };
     };
 
-    const visualToggle = Toggle(["INVERTED_TIMEBOX", "ACCENT_COLOR", "BATTERY_PERCENTAGE", "HOUR_MODE"]);
+    const visualToggle = Toggle(["INVERTED_TIMEBOX", "ACCENT_COLOR", "BATTERY_PERCENTAGE", "HOUR_MODE", "TZ_MODE"]);
     const basicToggle = Toggle(["TICK_UNITS", "SUBSCRIBE_TO_DATA", "WRIST_FLICK", "HEALTH_MODE", "WEATHER_MODE"]);
     const weatherToggle = Toggle(["WEATHER_REFRESH_RATE", "WEATHER_FORECAST_RANGE", "WEATHER_TEMP_UNIT", "WEATHER_WIND_UNIT"], ["WEATHER_DESC"]);
-    const wakeupToggle = Toggle(["TAP_WAKEUP_DURATION", "WAKEUP_LIGHT", "WAKEUP_TICK_UNITS"]);
+    const wakeupToggle = Toggle(["TAP_WAKEUP_DURATION", "WAKEUP_LIGHT", "WAKEUP_TICK_UNITS", "TZ_ID"]);
     const batteryToggle = Toggle(["BAT_MODE", "BAT_MODE_LB", "BAT_MODE_ST_START", "BAT_MODE_ST_END", "QTM_TICK_UNITS"], [], function(state) {
         const item = config.getItemByMessageKey("BAT_MODE");
         toggle(item.get()[0] && !state, ["BAT_MODE_LB"]);
@@ -50,6 +52,44 @@ module.exports = function(minified) {
         toggle(this.get()[0] && !batteryToggle.state, ["BAT_MODE_LB"]);
         toggle(this.get()[1] && !batteryToggle.state, ["BAT_MODE_ST_START", "BAT_MODE_ST_END"]);
     }
+
+    var timezonesJSON = null;
+    var built = false;
+    var tzDebug = "Loading...";
+
+    const loadTimezones = function(timezonesJSON) {
+        const item = config.getItemByMessageKey("TZ_ID");
+        const debug = config.getItemById("TZ_DEBUG");
+        try {
+            const timezones = JSON.parse(timezonesJSON);
+            item.$manipulatorTarget.add(HTML('{{each}}<option value="{{this}}" class="item-select-option">{{this}}</option>{{/each}}', timezones));
+            debug.set(`Loaded ${timezones.length} timezones.`);
+            debug.hide();
+
+            const idstate = config.getItemByMessageKey("TZ_ID_STATE");
+            item.set(idstate.get());
+            item.on('change', function() {
+                idstate.set(item.get());
+            });
+        } catch (e) {
+            debug.set("Failed to load timezones. " + e);
+        }
+    }
+
+    config.on(config.EVENTS.BEFORE_BUILD, function() {
+        $.request('get', 'http://worldtimeapi.org/api/timezone', {})
+            .then(function(tzJSON) {
+                if (built) loadTimezones(tzJSON);
+                timezonesJSON = tzJSON;
+            })
+            .error(function(status, statusText, responseText) {
+                tzDebug = "Failed to fetch timezones. " + statusText;
+                if (built) {
+                    const debug = config.getItemById("TZ_DEBUG");
+                    debug.set(tzDebug);
+                }
+            });
+    });
 
     config.on(config.EVENTS.AFTER_BUILD, function () {
         var item = null;
@@ -88,5 +128,15 @@ module.exports = function(minified) {
 
         item = config.getItemByMessageKey("WEATHER_PRECIP_UNIT");
         item.hide();
+
+        item = config.getItemByMessageKey("TZ_ID_STATE");
+        item.hide();
+
+        built = true;
+        const debug = config.getItemById("TZ_DEBUG");
+        debug.set(tzDebug);
+        if (timezonesJSON !== null) {
+            loadTimezones(timezonesJSON);
+        }
     });
 }
