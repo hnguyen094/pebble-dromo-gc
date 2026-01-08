@@ -63,6 +63,23 @@ module.exports = function(minified) {
         try {
             const timezones = JSON.parse(timezonesJSON);
             item.$manipulatorTarget.add(HTML('{{each}}<option value="{{this}}" class="item-select-option">{{this}}</option>{{/each}}', timezones));
+            /* implements optgroups
+            var groups = [];
+            var group = {label: "", values:[]};
+            for (timezone of timezones) {
+                const tokens = timezone.split(/[/](.*)/);
+                if (group && group.label !== tokens[0]) {
+                    groups.push(group);
+                    group = {values:[]};
+                }
+                group.label = tokens[0];
+                group.values.push({ tz:timezone, label:(tokens.length > 1 ? `${tokens[1]} (${tokens[0]})` : timezone) });
+            }
+            groups.push(group);
+            for (group of groups) {
+                item.$manipulatorTarget.add(HTML('<optgroup label={{label}}> {{each values}}<option value="{{this.tz}}" class="item-select-option">{{this.label}}</option>{{/each}}</optgroup>', group));
+            }
+            */
             debug.set(`Loaded ${timezones.length} timezones.`);
             debug.hide();
 
@@ -72,7 +89,7 @@ module.exports = function(minified) {
                 idstate.set(item.get());
             });
         } catch (e) {
-            debug.set("Failed to load timezones. " + e);
+            debug.set("Failed to load timezones.\n" + e);
         }
     }
 
