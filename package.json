@@ -1,10 +1,17 @@
 {
   "name": "Dromo GC",
   "author": "elucis",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "keywords": [
     "autodromo",
-    "digital"
+    "digital",
+    "weather",
+    "open-meteo",
+    "timezone",
+    "dromo",
+    "precipitation",
+    "rain",
+    "temperature"
   ],
   "private": true,
   "dependencies": {
@@ -96,21 +103,9 @@
           "file": "fonts/dromo_ampm.ttf"
         },
         {
-          "characterRegex": "[A-Z0-9\\- ]",
-          "type": "font",
-          "name": "DROMO_DAYDATE_9",
-          "file": "fonts/dromo_daydate.ttf"
-        },
-        {
           "characterRegex": "[!%&(-?A-_a-}° ]",
           "type": "font",
           "name": "DROMO_BAT_5",
-          "file": "fonts/dromo_bat.ttf"
-        },
-        {
-          "characterRegex": "[!%&(-?A-_a-}° ]",
-          "type": "font",
-          "name": "DROMO_BAT_10",
           "file": "fonts/dromo_bat.ttf"
         },
         {
