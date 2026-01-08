@@ -142,7 +142,7 @@
                 "messageKey": "HEALTH_MODE",
                 "label": "Show Health",
                 "description": "Displays steps, maybe heart rate, and current predicted physical activity.",
-                "defaultValue": 2,
+                "defaultValue": 1,
                 "options": [
                     {
                         "label": "Always",
