@@ -75,19 +75,22 @@ Pebble.addEventListener('webviewclosed', function(e) {
     }
     settings[batmodekey] = batmode;
 
-    delete settings[tzidstatekey];
-
     const sendAnyway = function(error, msg) {
         sendAppMessage(msg);
         console.error(error);
     }
-    if (settings[tzidkey]) {
-        tz.get(settings[tzidkey]).then(function(partial) {
+    const cachedtz = settings[tzidstatekey];
+    delete settings[tzidstatekey];
+    if (cachedtz) {
+        settings[tzidkey] = cachedtz;
+        tz.get(cachedtz).then(function(partial) {
             settings[tzoffsetkey] = partial[tzoffsetkey];
             settings[tzcodekey] = partial[tzcodekey];
             sendAppMessage(settings);
         }).catch(e => sendAnyway(e, settings));
     } else {
+        settings[tzidkey] = "";
+        settings[tzoffsetkey] = 0;
         settings[tzcodekey] = "";
         sendAppMessage(settings);
     }

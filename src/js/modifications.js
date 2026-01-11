@@ -53,13 +53,29 @@ module.exports = function(minified) {
         toggle(this.get()[1] && !batteryToggle.state, ["BAT_MODE_ST_START", "BAT_MODE_ST_END"]);
     }
 
-    var timezonesJSON = null;
+    var timezonesJSON = 0; // 0 is unset, null is failed fetch. yuck.
     var built = false;
     var tzDebug = "Loading...";
+
+    const postBuild = function(wasError) {
+        const item = config.getItemByMessageKey("TZ_ID");
+        const idstate = config.getItemByMessageKey("TZ_ID_STATE");
+        if (wasError && idstate.get()) {
+            item.$manipulatorTarget.add(HTML('<option value="{{this}}" class="item-select-option">{{this}}</option>', idstate.get()));
+        }
+        const debug = config.getItemById("TZ_DEBUG");
+        if (wasError) debug.show();
+        debug.set(`${tzDebug}.<br>Try exiting and re-entering the configuration page if needed.`);
+        item.set(idstate.get());
+        item.on('change', function() {
+            idstate.set(item.get());
+        });
+    }
 
     const loadTimezones = function(timezonesJSON) {
         const item = config.getItemByMessageKey("TZ_ID");
         const debug = config.getItemById("TZ_DEBUG");
+        const idstate = config.getItemByMessageKey("TZ_ID_STATE");
         try {
             const timezones = JSON.parse(timezonesJSON);
             item.$manipulatorTarget.add(HTML('{{each}}<option value="{{this}}" class="item-select-option">{{this}}</option>{{/each}}', timezones));
@@ -80,33 +96,34 @@ module.exports = function(minified) {
                 item.$manipulatorTarget.add(HTML('<optgroup label={{label}}> {{each values}}<option value="{{this.tz}}" class="item-select-option">{{this.label}}</option>{{/each}}</optgroup>', group));
             }
             */
-            debug.set(`Loaded ${timezones.length} timezones.`);
-            debug.hide();
-
-            const idstate = config.getItemByMessageKey("TZ_ID_STATE");
-            item.set(idstate.get());
-            item.on('change', function() {
-                idstate.set(item.get());
-            });
+            tzDebug = `Loaded ${timezones.length} timezones.`;
+            postBuild(false);
         } catch (e) {
-            debug.set("Failed to load timezones.\n" + e);
+            tzDebug = `Failed to load timezones.<br>${e}`;
+            postBuild(true);
         }
+        item.set(idstate.get());
+        item.on('change', function() {
+            idstate.set(item.get());
+        });
     }
 
-    config.on(config.EVENTS.BEFORE_BUILD, function() {
+    const getTimezones = function() {
         $.request('get', 'http://worldtimeapi.org/api/timezone', {})
             .then(function(tzJSON) {
                 if (built) loadTimezones(tzJSON);
                 timezonesJSON = tzJSON;
             })
             .error(function(status, statusText, responseText) {
-                tzDebug = "Failed to fetch timezones. " + statusText;
+                tzDebug = `Failed to fetch timezones. (${status})`;
+                timezonesJSON = null;
                 if (built) {
-                    const debug = config.getItemById("TZ_DEBUG");
-                    debug.set(tzDebug);
+                    postBuild(true);
                 }
             });
-    });
+    }
+
+    config.on(config.EVENTS.BEFORE_BUILD, getTimezones);
 
     config.on(config.EVENTS.AFTER_BUILD, function () {
         var item = null;
@@ -149,10 +166,17 @@ module.exports = function(minified) {
         item = config.getItemByMessageKey("TZ_ID_STATE");
         item.hide();
 
+        item = config.getItemById("TZ_DEBUG");
+        item.hide();
+
+        item = config.getItemById("TZ_BUTTON");
+        item.on('click', getTimezones);
+        item.hide();
+
         built = true;
-        const debug = config.getItemById("TZ_DEBUG");
-        debug.set(tzDebug);
-        if (timezonesJSON !== null) {
+        if (timezonesJSON === null) {
+            postBuild(true);
+        } else if (timezonesJSON !== 0) {
             loadTimezones(timezonesJSON);
         }
     });

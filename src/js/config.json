@@ -336,6 +336,7 @@
                 "type": "select",
                 "messageKey": "TZ_ID",
                 "label": "2nd Timezone",
+                "description": "Uses <a href=\"http://worldtimeapi.org\">worldtimeapi.org</a>, which is sometimes down.",
                 "options": [
                     {
                         "label": "Disabled",
@@ -346,6 +347,12 @@
             {
                 "type": "text",
                 "messageKey": "TZ_ID_STATE"
+            },
+            {
+                "type": "button",
+                "id": "TZ_BUTTON",
+                "defaultValue": "Retry",
+                "description": "Try fetching the timezone list again. Requires a network connection."
             },
             {
                 "type": "text",
