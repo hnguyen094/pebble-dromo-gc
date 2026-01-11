@@ -5,4 +5,4 @@ node_modules/
 .lock-waf_darwin_build
 TODO.txt
 /*.png
-
+screenshots/
