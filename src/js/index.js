@@ -75,12 +75,12 @@ Pebble.addEventListener('webviewclosed', function(e) {
     }
     settings[batmodekey] = batmode;
 
-    const sendAnyway = function(error, msg) {
-        sendAppMessage(msg);
-        console.error(error);
-    }
     const cachedtz = settings[tzidstatekey];
     delete settings[tzidstatekey];
+    const sendAnyway = function(error, msg) {
+        console.error(`Unable to get offset for ${cachedtz}: ${error.message}`);
+        sendAppMessage(msg);
+    }
     if (cachedtz) {
         settings[tzidkey] = cachedtz;
         tz.get(cachedtz).then(function(partial) {
@@ -104,7 +104,7 @@ Pebble.addEventListener('ready', function(e) {
             sendAppMessage(msg);
             weatherSubscribe();
         }).catch(function(e) {
-            console.error(e);
+            console.error(`Unable to get offset for ${settings.TZ_ID}: ${e.message}`);
             weatherSubscribe();
         });
     } else weatherSubscribe();

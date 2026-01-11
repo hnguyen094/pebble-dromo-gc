@@ -25,16 +25,20 @@ const getTimezoneOffset = function(timezone) {
         const url = `http://worldtimeapi.org/api/timezone/${timezone}`;
         var xhr = new XMLHttpRequest();
         xhr.onload = function () {
-            const response = JSON.parse(this.responseText);
-            const keys = require('message_keys');
-            const code = '+-'.includes(response.abbreviation[0])
-                ? `UTC${response.abbreviation}` : response.abbreviation;
-            resolve({
-                [keys.TZ_OFFSET]: response.raw_offset + response.dst_offset,
-                [keys.TZ_CODE]: code
-            });
+            if (xhr.status != 200) {
+                reject(new Error(`Timezone GET failed with error ${xhr.status} ${xhr.statusText}.`));
+            } else {
+                const response = JSON.parse(this.responseText);
+                const keys = require('message_keys');
+                const code = '+-'.includes(response.abbreviation[0])
+                    ? `UTC${response.abbreviation}` : response.abbreviation;
+                resolve({
+                    [keys.TZ_OFFSET]: response.raw_offset + response.dst_offset,
+                    [keys.TZ_CODE]: code
+                });
+            }
         }
-        xhr.onerror = reject;
+        xhr.onerror = () => reject(new Error("Failed to make timezone GET request."));
         xhr.open('GET', url);
         xhr.send();
     });

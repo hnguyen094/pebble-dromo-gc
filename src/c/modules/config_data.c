@@ -98,16 +98,18 @@ static bool config_received(DictionaryIterator *iter) {
             s_app_config.tz_offset = (int)kvp->value->int32;
         else if (kvp->key == MESSAGE_KEY_TZ_CODE) 
             strcpy(s_app_config.tz_code, kvp->value->cstring);
-        if (kvp->key == MESSAGE_KEY_WEATHER_FORECAST_RANGE)
+        else if (kvp->key == MESSAGE_KEY_WEATHER_FORECAST_RANGE)
             s_app_config.weather_forecast_range = (int)kvp->value->int32;
-        if (kvp->key == MESSAGE_KEY_WEATHER_TEMP_UNIT)
+        else if (kvp->key == MESSAGE_KEY_WEATHER_TEMP_UNIT)
             s_app_config.weather_temp_unit = (int)kvp->value->int32;
-        if (kvp->key == MESSAGE_KEY_WEATHER_WIND_UNIT)
+        else if (kvp->key == MESSAGE_KEY_WEATHER_WIND_UNIT)
             s_app_config.weather_wind_unit = (int)kvp->value->int32;
-        if (kvp->key == MESSAGE_KEY_WEATHER_PRECIP_UNIT)
+        else if (kvp->key == MESSAGE_KEY_WEATHER_PRECIP_UNIT)
             s_app_config.weather_precip_unit = (int)kvp->value->int32;
-        else
+        else {
+            APP_LOG(APP_LOG_LEVEL_DEBUG, "Not Reading %d", (int)kvp->key);
             read_all = false;
+        }
         kvp = dict_read_next(iter);
     }
     config_updated();
