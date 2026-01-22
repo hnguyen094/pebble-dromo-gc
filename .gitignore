@@ -3,6 +3,7 @@
 build/
 node_modules/
 .lock-waf_darwin_build
+.lock-waf_linux_build
 TODO.txt
 /*.png
 screenshots/
