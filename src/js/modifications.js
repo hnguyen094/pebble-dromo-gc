@@ -56,6 +56,7 @@ module.exports = function(minified) {
     var timezonesJSON = 0; // 0 is unset, null is failed fetch. yuck.
     var built = false;
     var tzDebug = "Loading...";
+    var retries = 10;
 
     const postBuild = function(wasError) {
         const item = config.getItemByMessageKey("TZ_ID");
@@ -70,6 +71,7 @@ module.exports = function(minified) {
         item.on('change', function() {
             idstate.set(item.get());
         });
+        item.enable();
     }
 
     const loadTimezones = function(timezonesJSON) {
@@ -115,15 +117,20 @@ module.exports = function(minified) {
                 timezonesJSON = tzJSON;
             })
             .error(function(status, text, xhr) {
-                tzDebug = `Failed to fetch timezones. (${status})`;
-                timezonesJSON = null;
-                if (built) {
-                    postBuild(true);
+                retries -= 1;
+                if (retries >= 0) {
+                    $.wait(200).then(getTimezones);
+                } else {
+                    tzDebug = `Failed to fetch timezones. (${status})`;
+                    timezonesJSON = null;
+                    if (built) {
+                        postBuild(true);
+                    }
                 }
             });
     }
 
-    // config.on(config.EVENTS.BEFORE_BUILD, getTimezones);
+    config.on(config.EVENTS.BEFORE_BUILD, getTimezones);
 
     config.on(config.EVENTS.AFTER_BUILD, function () {
         var item = null;
@@ -163,6 +170,9 @@ module.exports = function(minified) {
         item = config.getItemByMessageKey("WEATHER_PRECIP_UNIT");
         item.hide();
 
+        item = config.getItemByMessageKey("TZ_ID");
+        item.disable();
+
         item = config.getItemByMessageKey("TZ_ID_STATE");
         item.hide();
 
@@ -179,6 +189,5 @@ module.exports = function(minified) {
         } else if (timezonesJSON !== 0) {
             loadTimezones(timezonesJSON);
         }
-        getTimezones();
     });
 }
