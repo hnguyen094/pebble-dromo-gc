@@ -109,12 +109,12 @@ module.exports = function(minified) {
     }
 
     const getTimezones = function() {
-        $.request('get', 'http://worldtimeapi.org/api/timezone', {})
+        $.request('get', 'http://worldtimeapi.org/api/timezone')
             .then(function(tzJSON) {
                 if (built) loadTimezones(tzJSON);
                 timezonesJSON = tzJSON;
             })
-            .error(function(status, statusText, responseText) {
+            .error(function(status, text, xhr) {
                 tzDebug = `Failed to fetch timezones. (${status})`;
                 timezonesJSON = null;
                 if (built) {
@@ -123,7 +123,7 @@ module.exports = function(minified) {
             });
     }
 
-    config.on(config.EVENTS.BEFORE_BUILD, getTimezones);
+    // config.on(config.EVENTS.BEFORE_BUILD, getTimezones);
 
     config.on(config.EVENTS.AFTER_BUILD, function () {
         var item = null;
@@ -179,5 +179,6 @@ module.exports = function(minified) {
         } else if (timezonesJSON !== 0) {
             loadTimezones(timezonesJSON);
         }
+        getTimezones();
     });
 }
