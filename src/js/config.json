@@ -336,7 +336,7 @@
                 "type": "select",
                 "messageKey": "TZ_ID",
                 "label": "2nd Timezone",
-                "description": "Uses <a href=\"http://worldtimeapi.org\">worldtimeapi.org</a>, which is sometimes down.",
+                "description": "Uses <a href=\"https://time.now\">World Time API by Time.Now</a>.",
                 "options": [
                     {
                         "label": "Disabled",

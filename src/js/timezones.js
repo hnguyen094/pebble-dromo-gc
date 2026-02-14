@@ -9,20 +9,21 @@ const indexOf = function(timezone) {
     return new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.onload = function () {
-            const newTimezones = JSON.parse(this.responseText);
-            localStorage.set(TZ_KEY, this.responseText);
+            let newTimezones = JSON.parse(this.responseText);
+            newTimezones = newTimezones.sort();
+            localStorage.set(TZ_KEY, JSON.stringify(newTimezones));
             timezones = newTimezones;
             resolve(timezones.indexOf(timezone));
         }
         xhr.onerror = reject;
-        xhr.open('GET', `http://worldtimeapi.org/api/timezone`);
+        xhr.open('GET', `https://time.now/developer/api/timezone`);
         xhr.send();
     });
 }
 
 const getTimezoneOffset = function(timezone) {
     return new Promise(function(resolve, reject) {
-        const url = `http://worldtimeapi.org/api/timezone/${timezone}`;
+        const url = `https://time.now/developer/api/timezone/${timezone}`;
         var xhr = new XMLHttpRequest();
         xhr.onload = function () {
             if (xhr.status != 200) {

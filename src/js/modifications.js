@@ -79,7 +79,8 @@ module.exports = function(minified) {
         const debug = config.getItemById("TZ_DEBUG");
         const idstate = config.getItemByMessageKey("TZ_ID_STATE");
         try {
-            const timezones = JSON.parse(timezonesJSON);
+            let timezones = JSON.parse(timezonesJSON);
+            timezones = timezones.sort();
             item.$manipulatorTarget.add(HTML('{{each}}<option value="{{this}}" class="item-select-option">{{this}}</option>{{/each}}', timezones));
             /* implements optgroups
             var groups = [];
@@ -111,7 +112,7 @@ module.exports = function(minified) {
     }
 
     const getTimezones = function() {
-        $.request('get', 'http://worldtimeapi.org/api/timezone')
+        $.request('get', 'https://time.now/developer/api/timezone')
             .then(function(tzJSON) {
                 if (built) loadTimezones(tzJSON);
                 timezonesJSON = tzJSON;
